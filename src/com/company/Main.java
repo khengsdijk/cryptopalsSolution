@@ -9,8 +9,8 @@ public class Main {
         challenge1();
         challenge2();
         challenge3();
-        System.out.println(XorUtils.bruteForceSinlgeKeyXor("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"));
-        //challenge4();
+        //System.out.println(XorUtils.bruteForceSinlgeKeyXor("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"));
+        challenge4();
 
     }
 
@@ -45,7 +45,7 @@ public class Main {
 
     public static void challenge4(){
 
-        DetectXor.detectXor();
+        System.out.println(DetectXor.detectXor());
 
     }
 

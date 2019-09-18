@@ -47,9 +47,6 @@ public class DetectXor {
         return map;
     }
 
-
-
-
     public static List<String> loadFile(String fileName){
 
         List<String> fileContent = null;
@@ -64,18 +61,44 @@ public class DetectXor {
         return fileContent;
     }
 
+
     public static String detectXor(){
         List<String> input = DetectXor.loadFile("/home/koen/Documents/ICT projects/assignment2/resources/file.txt");
+
+        double highScore = 0;
+        String highestScoringText = "";
+        byte highestScoringKey= 1;
 
         for (String a: input
         ) {
 
-            //System.out.println(a);
-            //System.out.println(XorUtils.decryptSingleByteXorString(a, 'X'));
+            byte[] keyset = XorUtils.generateKeys();
+            byte[] decodedInput = hexadecimalUtils.decodeHexString(a);
+            byte[] result = new byte[decodedInput.length];
 
-            System.out.println(new String(hexadecimalUtils.decodeHexString(a)));
+            for (byte key: keyset) {
+                String temp = "";
+                for (int i = 0; i < decodedInput.length; i++) {
+                    result[i] = (byte) (decodedInput[i] ^ key);
+                }
+
+                temp = new String(result);
+                double score = XorUtils.frequencyScore(temp);
+                if(score > highScore){
+                    highScore = score;
+                    highestScoringText = temp;
+                    highestScoringKey = key;
+                }
+
+            }
         }
-        return "A";
+        System.out.println(highestScoringKey);
+
+        String resultString = "The highest score is: " + highScore + " \n"
+                + "The highest scoring text is: " + highestScoringText + " \n"
+                +  "The highest scoring key is:  " + (char) highestScoringKey;
+
+        return resultString;
     }
 
 
