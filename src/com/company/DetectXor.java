@@ -68,6 +68,7 @@ public class DetectXor {
         double highScore = 0;
         String highestScoringText = "";
         byte highestScoringKey= 1;
+        int lineNumber = 0;
 
         for (String a: input
         ) {
@@ -78,6 +79,7 @@ public class DetectXor {
 
             for (byte key: keyset) {
                 String temp = "";
+
                 for (int i = 0; i < decodedInput.length; i++) {
                     result[i] = (byte) (decodedInput[i] ^ key);
                 }
@@ -88,17 +90,19 @@ public class DetectXor {
                     highScore = score;
                     highestScoringText = temp;
                     highestScoringKey = key;
+                   lineNumber = input.indexOf(a);
                 }
-
             }
         }
-        System.out.println(highestScoringKey);
+        String test2 = "a";
 
         String resultString = "The highest score is: " + highScore + " \n"
                 + "The highest scoring text is: " + highestScoringText + " \n"
-                +  "The highest scoring key is:  " + (char) highestScoringKey;
+                +  "The highest scoring key is:  " + (char) highestScoringKey + "\n"
+                + "The line number of the encrypted sentence is: " + lineNumber;
 
         return resultString;
+
     }
 
 
