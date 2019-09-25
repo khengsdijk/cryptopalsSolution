@@ -1,6 +1,7 @@
 package com.company;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BreakXor {
 
@@ -51,33 +52,127 @@ public class BreakXor {
 
         int[] keys = possibleKeys();
 
-        List<String> encryptedStrings = DetectXor.loadFile("/home/koen/Documents/ICT projects/assignment2/resources/challenge6.txt");
-
-        // 2 lines to ensure enough bytes
-        String encryptedString = encryptedStrings.get(1) + encryptedStrings.get(2);
-        byte[] bytes = encryptedString.getBytes();
+        byte[] bytes = FileStuff.readBase64("/home/koen/Documents/ICT projects/assignment2/resources/challenge6.txt");
+        System.out.println(bytes.length);
+        Map<Integer, Integer> keysAndDistance = new HashMap<>();
 
         for (int key : keys) {
 
-            byte[] a = new byte[key];
-            byte[] b = new byte[key];
+            byte[] data1 = Arrays.copyOfRange(bytes, 0 * key, 1 * key);
+            byte[] data2 = Arrays.copyOfRange(bytes, 1 * key, 2 * key);
+            byte[] data3 = Arrays.copyOfRange(bytes, 2 * key, 3 * key);
+            byte[] data4 = Arrays.copyOfRange(bytes, 3 * key, 4 * key);
 
-            for (int i = 0; i < key; i++) {
-                a[i] = bytes[i];
+            int totaldist = calculateDistance(data1, data2);
+            totaldist += calculateDistance(data1, data3);
+            totaldist += calculateDistance(data1, data4);
+            totaldist += calculateDistance(data2, data3);
+            totaldist += calculateDistance(data2, data4);
+            totaldist += calculateDistance(data3, data4);
+
+            keysAndDistance.put(key, totaldist/key);
+        }
+
+
+        Map<Integer, Integer> result = keysAndDistance.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+        result.forEach((mapKey, value) -> System.out.println(mapKey + ":" + value));
+
+        // you can change this to try the top keysizes
+        for (int i = 0; i < 1; i++)
+        {
+            int keysize = 29;
+            System.out.println("trying keysize " + keysize);
+            byte[] key = new byte[keysize];
+
+            // split the data into chunks
+            byte[][] data = new byte[bytes.length / keysize][keysize];
+            int pos = 0;
+            for (int j = 0; j < bytes.length / keysize; j++)
+            {
+                for (int l = 0; l < keysize; l++)
+                    data[j][l] = bytes[pos++];
             }
 
-            for (int i = key; i < (key * 2); i++) {
-                b[i - key] = bytes[i];
+            // transpose the array
+            byte[][] transpose = new byte[keysize][bytes.length / keysize];
+            for (int r = 0; r < data.length; r++)
+            {
+                for (int c = 0; c < data[0].length; c++)
+                {
+                    transpose[c][r] = data[r][c];
+                }
             }
 
-            int distance = calculateDistance(new String(a), new String(b));
+            for (int k = 0; k < keysize; k++)
+            {
+                for (int j = 0; j < 255; j++)
+                {
+                    byte[] decoded = single(transpose[k], (byte) j);
+                    double score = stringMetric(decoded);
+                    if (score > 0.85)
+                    {
+                        // System.out.print((char)j + ", ");
+                        key[k] = (byte) j;
+                    }
+                }
+            }
 
-            double result = distance / (double) key;
-
-            System.out.println("The distance with key: " + key + " is: " + result);
-
+            System.out.println("Guessed Key: " + toNormalStr(key));
+            System.out.println(toNormalStr(RepeatingXor.repeatedXorEncryptionByteArray(bytes, key)));
         }
     }
+
+    public static byte[] repeating(byte[] arr, byte[] key)
+    {
+        byte[] ret = new byte[arr.length];
+        for(int i=0; i<arr.length; i++)
+        {
+            ret[i] = (byte)(arr[i] ^ key[i % key.length]);
+        }
+        return ret;
+    }
+
+    public static double stringMetric(byte[] arr)
+    {
+        int count = 0;
+        for (byte b : arr)
+        {
+            // stuff is weighted how I felt like it
+            if ((b >= 'a' && b <= 'z') || b == ' ')
+                count += 4;
+            if ((b >= 'A' && b <= 'Z') || b == '\'' || b == '.' || b == '!' || b == '?')
+                count += 2;
+            if ((b >= '0' && b <= '9') || b == '\n' || b == '\t' || b == '\r')
+                count++;
+        }
+        return (double)count / (arr.length * 4);
+    }
+
+    public static String toNormalStr(byte[] arr)
+    {
+        try
+        {
+            return new String(arr, "UTF-8");
+        } catch (Exception e)
+        {
+            return "";
+        }
+    }
+
+    public static byte[] single(byte[] arr, byte key)
+    {
+        byte[] ret = new byte[arr.length];
+        for(int i=0; i<arr.length; i++)
+        {
+            ret[i] = (byte) (arr[i] ^ key);
+        }
+        return ret;
+    }
+
 
     public static void breakEncryption(){
         List<String> encryptedStrings = DetectXor.loadFile("/home/koen/Documents/ICT projects/assignment2/resources/challenge6.txt");

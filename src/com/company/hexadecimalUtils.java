@@ -4,6 +4,7 @@ import java.util.Base64;
 
 public class hexadecimalUtils {
 
+    private static String hexKey = "0123456789abcdef";
 
     public static String hexToBase64(String hexString){
         byte[] test = decodeHexString(hexString);
@@ -52,6 +53,33 @@ public class hexadecimalUtils {
         int secondDigit = toDigit(hexString.charAt(1));
         return (byte) ((firstDigit << 4) + secondDigit);
     }
+
+    public static String toNormalStr(byte[] arr)
+    {
+        try
+        {
+            return new String(arr, "UTF-8");
+        } catch (Exception e)
+        {
+            return "";
+        }
+    }
+
+    public static String toPrettyHexStr(byte[] arr)
+    {
+        String s = "";
+        int i = 0;
+        for (byte b : arr)
+        {
+            if (i % 16 == 0 && i != 0)
+                s += "\n";
+            s += hexKey.charAt((b & 0xF0) >> 4);
+            s += hexKey.charAt(b & 0x0F);
+            i++;
+        }
+        return s;
+    }
+
 
     private static int toDigit(char hexChar) {
         int digit = Character.digit(hexChar, 16);

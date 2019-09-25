@@ -1,5 +1,6 @@
 package com.company;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -12,9 +13,9 @@ public class Main {
         //System.out.println(XorUtils.bruteForceSinlgeKeyXor("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"));
         challenge4();
         challenge5();
-        System.out.println(BreakXor.calculateDistance("this is a test", "wokka wokka!!!!"));
-        BreakXor.calculateKey();
-        BreakXor.breakEncryption();
+        challenge6();
+        challenge7();
+        challenge8();
     }
 
     public static void challenge1(){
@@ -64,5 +65,61 @@ public class Main {
             System.out.println("Challenge 5 correct!!!!");
         }
     }
+
+    public static void challenge6(){
+        BreakXor.calculateKey();
+        System.out.println("----------------------------------------------------------------");
+    }
+
+    public static void challenge7(){
+        System.out.println("----------------------------Challenge 7------------------------------------");
+
+        byte[] keyBytes = "YELLOW SUBMARINE".getBytes();
+        AESKey k = new AESKey(keyBytes);
+        byte[] data = FileStuff.readBase64("/home/koen/Documents/ICT projects/assignment2/resources/assignment7.txt");
+
+
+        AESBlockCipher cipher = new AESBlockCipher(k);
+        cipher.decrypt(data);
+        System.out.println(new String(data));
+        System.out.println(" -------------------------------------------------------------------");
+    }
+
+    public static void challenge8(){
+        List<String> cipherTexts = DetectXor.loadFile("/home/koen/Documents/ICT projects/assignment2/resources/data8.txt");
+        int line = 1;
+        for (String cText : cipherTexts)
+        {
+            byte[] cipher = hexadecimalUtils.decodeHexString(cText);
+
+            // we know that every block is 16 bytes
+            byte[][] data = new byte[cipher.length / 16][16];
+            int pos = 0;
+            for (int j = 0; j < cipher.length / 16; j++)
+            {
+                for (int l = 0; l < 16; l++)
+                    data[j][l] = cipher[pos++];
+            }
+            boolean breakout = false;
+            for (int i = 0; i < data.length; i++)
+            {
+                if (breakout)
+                    break;
+                for (int j = 0; j < data.length; j++)
+                {
+                    if (i == j)
+                        continue;
+                    if (Arrays.equals(data[i], data[j]))
+                    {
+                        System.out.println("Line " + line + " Could be ECB");
+                        breakout = true;
+                        break;
+                    }
+                }
+            }
+            line++;
+        }
+    }
+
 
 }

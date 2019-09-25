@@ -17,5 +17,16 @@ public class RepeatingXor {
         return hexadecimalUtils.bytesToHexString(encryptedByteArray);
     }
 
+    public static byte[] repeatedXorEncryptionByteArray(byte[] input, byte[] key){
+
+        byte[] encryptedByteArray = new byte[input.length];
+
+        for (int i = 0; i < input.length; i++) {
+            encryptedByteArray[i] = (byte) (input[i] ^ key[(i % (key.length))] );
+        }
+
+        return encryptedByteArray;
+    }
+
 
 }
