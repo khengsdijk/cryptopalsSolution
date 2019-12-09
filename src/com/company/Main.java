@@ -78,14 +78,14 @@ public class Main {
         AESKey k = new AESKey(keyBytes);
         byte[] data = FileStuff.readBase64("/home/koen/Documents/ICT projects/assignment2/resources/assignment7.txt");
 
-
         AESBlockCipher cipher = new AESBlockCipher(k);
         cipher.decrypt(data);
         System.out.println(new String(data));
-        System.out.println(" -------------------------------------------------------------------");
+
     }
 
     public static void challenge8(){
+        System.out.println(" ------------------------------challenge8-------------------------------------");
         List<String> cipherTexts = DetectXor.loadFile("/home/koen/Documents/ICT projects/assignment2/resources/data8.txt");
         int line = 1;
         for (String cText : cipherTexts)
@@ -95,6 +95,8 @@ public class Main {
             // we know that every block is 16 bytes
             byte[][] data = new byte[cipher.length / 16][16];
             int pos = 0;
+
+            // fill up the array
             for (int j = 0; j < cipher.length / 16; j++)
             {
                 for (int l = 0; l < 16; l++)
@@ -111,7 +113,7 @@ public class Main {
                         continue;
                     if (Arrays.equals(data[i], data[j]))
                     {
-                        System.out.println("Line " + line + " Could be ECB");
+                        System.out.println("Line " + line + " is probably encrypted by ECB");
                         breakout = true;
                         break;
                     }

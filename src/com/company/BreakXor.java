@@ -106,7 +106,7 @@ public class BreakXor {
                     transpose[c][r] = data[r][c];
                 }
             }
-
+            // time to bruteforce the key
             for (int k = 0; k < keysize; k++)
             {
                 for (int j = 0; j < 255; j++)
@@ -115,7 +115,6 @@ public class BreakXor {
                     double score = stringMetric(decoded);
                     if (score > 0.85)
                     {
-                        // System.out.print((char)j + ", ");
                         key[k] = (byte) j;
                     }
                 }
@@ -141,7 +140,7 @@ public class BreakXor {
         int count = 0;
         for (byte b : arr)
         {
-            // stuff is weighted how I felt like it
+            //  my other frequency didnt work but this does??  Its ranked by hand
             if ((b >= 'a' && b <= 'z') || b == ' ')
                 count += 4;
             if ((b >= 'A' && b <= 'Z') || b == '\'' || b == '.' || b == '!' || b == '?')

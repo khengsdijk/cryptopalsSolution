@@ -10,7 +10,7 @@ public class AESKey {
     protected int expandedKeySize;
 
     /**
-     * Make an AES key with the following bytes and prepare it for use
+     * create the key
      */
     public AESKey(byte[] data) {
         keySize = data.length;
@@ -19,7 +19,7 @@ public class AESKey {
     }
 
     /**
-     * Get the key bytes for this key;
+     * Getter for bytes
      */
     public byte[] keyBytes()
     {
@@ -27,7 +27,7 @@ public class AESKey {
     }
 
     /**
-     * Get the Round AES key for use in the crypto
+     * Get the round key so it can be used for encryption
      */
     protected byte[] getRoundKey(int r)
     {
@@ -38,7 +38,7 @@ public class AESKey {
     }
 
     /**
-     * Rotate 4 bytes by one spot
+     * Rotate bites by 4
      */
     private byte[] rotate(byte[] d)
     {
@@ -50,7 +50,7 @@ public class AESKey {
     }
 
     /**
-     * Core Expansion function for the key schedule
+     * Expansion function
      */
     private void expandCore(byte[] word, int iter)
     {
@@ -63,7 +63,7 @@ public class AESKey {
     }
 
     /**
-     * Expands the given key to a round key for use.
+     * expand the key to a round key so it can be used
      */
     private void expandKey()
     {
